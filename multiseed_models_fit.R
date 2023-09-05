@@ -34,8 +34,8 @@ casp_threshold <- 0
 # Source custom functions
 source(file = 'stratified.R')
 
-# Load the data
-data <- read.csv("data.csv")
+# Load data
+
 
 # Prepare data
 
@@ -73,8 +73,8 @@ for (seed in seeds) {
   test_norm <- cbind(test_norm, 'outcome_bool' = test_y)
   
   # Create dummy variables
-  training_norm_dummy <- fastDummies::dummy_cols(training_norm, cols = vars_to_dummy, remove_first_dummy = TRUE)
-  test_norm_dummy <- fastDummies::dummy_cols(test_norm, cols = vars_to_dummy, remove_first_dummy = TRUE)
+  training_norm_dummy <- fastDummies::dummy_cols(training_norm, select_columns= vars_to_dummy, remove_first_dummy = TRUE)
+  test_norm_dummy <- fastDummies::dummy_cols(test_norm, select_columns = vars_to_dummy, remove_first_dummy = TRUE)
   
   # Models fit - logistic regression
   set.seed(seed)
@@ -104,7 +104,7 @@ for (seed in seeds) {
   set.seed(seed)
   control <- trainControl(method = 'cv', number = 10, search = 'grid', savePredictions = 'final')
   tunegrid <- expand.grid(.mtry = c(4:10))
-  model_RF <- train(outcome_bool ~ ., data = training_norm, method = 'rf', metric = 'Accuracy', tuneGrid = tunegrid, trControl = control, ntree = 500)
+  model_RF <- train(outcome_bool ~ ., data = training_norm, method = 'rf', tuneGrid = tunegrid, trControl = control, ntree = 500)
   
   # Performances LR
   prob_test_LR <- predict(model_LR, test_norm, type = "response")
